@@ -36,10 +36,34 @@
         <div class="container">
             <div class="hero-content">
                 <h1 class="hero-title">Embedded Systems Developer</h1>
-                <p class="hero-subtitle">Passionate about creating efficient, low-level software solutions</p>
+                <p class="hero-subtitle"><span id="typed-text"></span><span class="cursor">|</span></p>
                 <div class="hero-buttons">
                     <a href="#projects" class="btn btn-primary">View Projects</a>
                     <a href="https://github.com/aroesz98" target="_blank" class="btn btn-secondary">GitHub Profile</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" data-target="0">0</div>
+                    <div class="stat-label">Projects Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="0">0</div>
+                    <div class="stat-label">Lines of Code</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="0">0</div>
+                    <div class="stat-label">GitHub Repos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="0">0</div>
+                    <div class="stat-label">Years Experience</div>
                 </div>
             </div>
         </div>
@@ -50,27 +74,46 @@
         <div class="container">
             <h2 class="section-title">Featured Projects</h2>
             <div class="features-grid">
-                <div class="feature-card">
+                <a href="https://github.com/aroesz98/CRTOS" target="_blank" class="feature-card">
                     <div class="feature-icon">⚙️</div>
                     <h3>CRTOS</h3>
                     <p>Custom Real-Time Operating System designed for embedded applications with efficient task scheduling and resource management</p>
-                </div>
-                <div class="feature-card">
+                    <span class="view-project">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/aroesz98/TFTLIB" target="_blank" class="feature-card">
                     <div class="feature-icon">🖥️</div>
                     <h3>TFTLIB</h3>
                     <p>High-performance TFT display library optimized for microcontrollers with support for multiple display controllers</p>
-                </div>
-                <div class="feature-card">
+                    <span class="view-project">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/aroesz98/FLASHLIB" target="_blank" class="feature-card">
                     <div class="feature-icon">💾</div>
                     <h3>FLASHLIB</h3>
                     <p>Flash memory management library providing reliable and efficient flash operations for embedded systems</p>
-                </div>
-                <div class="feature-card">
+                    <span class="view-project">View on GitHub →</span>
+                </a>
+                <a href="https://github.com/aroesz98/PSXE_ReARMed" target="_blank" class="feature-card">
                     <div class="feature-icon">🎮</div>
                     <h3>PSXE_ReARMed</h3>
                     <p>PlayStation emulator port optimized for ARM processors with improved performance and compatibility</p>
-                </div>
+                    <span class="view-project">View on GitHub →</span>
+                </a>
             </div>
+        </div>
+    </section>
+
+    <!-- GitHub Repositories Section -->
+    <section id="github-repos" class="github-section">
+        <div class="container">
+            <h2 class="section-title">Latest GitHub Activity</h2>
+            <div class="repos-container">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading repositories...</p>
+                </div>
+                <div id="repos-grid" class="repos-grid"></div>
+            </div>
+            <a href="https://github.com/aroesz98?tab=repositories" target="_blank" class="btn btn-primary view-all-btn">View All Repositories</a>
         </div>
     </section>
 

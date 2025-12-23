@@ -29,6 +29,7 @@ body {
     line-height: 1.6;
     color: var(--text-dark);
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .container {
@@ -133,7 +134,7 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: var(--white);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .hero::before {
@@ -215,6 +216,8 @@ body {
 .features {
     padding: 5rem 0;
     background: var(--bg-light);
+    position: relative;
+    z-index: 2;
 }
 
 .section-title {
@@ -222,6 +225,8 @@ body {
     font-size: 2.5rem;
     margin-bottom: 3rem;
     color: var(--text-dark);
+    position: relative;
+    z-index: 1;
 }
 
 .features-grid {
@@ -418,6 +423,232 @@ body {
     }
 }
 
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ===========================
+   Typing Animation
+   =========================== */
+.cursor {
+    animation: blink 1s infinite;
+    font-weight: 400;
+    margin-left: 2px;
+}
+
+/* ===========================
+   Stats Section
+   =========================== */
+.stats-section {
+    padding: 4rem 0 5rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    z-index: 1;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    text-align: center;
+}
+
+.stat-card {
+    padding: 2rem 1rem;
+    color: var(--white);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1;
+    display: block;
+    height: auto;
+}
+
+.stat-label {
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 500;
+    line-height: 1.4;
+    display: block;
+    height: auto;
+}
+
+/* ===========================
+   GitHub Repositories Section
+   =========================== */
+.github-section {
+    padding: 5rem 0;
+    background: var(--white);
+}
+
+.repos-container {
+    min-height: 300px;
+    position: relative;
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--bg-light);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-spinner p {
+    margin-top: 1rem;
+    color: var(--text-light);
+}
+
+.repos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.repo-card {
+    background: var(--bg-light);
+    padding: 1.5rem;
+    border-radius: 12px;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    animation: slideInLeft 0.6s ease;
+}
+
+.repo-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.repo-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.repo-icon {
+    font-size: 1.2rem;
+}
+
+.repo-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.repo-description {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    min-height: 60px;
+}
+
+.repo-stats {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.repo-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.language-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.view-all-btn {
+    display: inline-block;
+    margin: 2rem auto 0;
+    text-align: center;
+}
+
+/* ===========================
+   Enhanced Feature Cards
+   =========================== */
+.feature-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.view-project {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: var(--transition);
+}
+
+.feature-card:hover .view-project {
+    opacity: 1;
+    transform: translateX(0);
+}
+
 /* ===========================
    Responsive Design
    =========================== */
@@ -468,6 +699,19 @@ body {
     .section-title {
         font-size: 2rem;
     }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -482,5 +726,17 @@ body {
 
     .btn {
         width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
     }
 }
