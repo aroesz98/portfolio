@@ -81,87 +81,176 @@ setTimeout(typeText, 1000);
 // ===========================
 // Fetch GitHub Stats and Repos Combined
 // ===========================
+const githubUsername = 'aroesz98';
+const githubCacheKey = 'portfolioGithubData';
+const githubCacheMaxAge = 1000 * 60 * 60 * 24;
+const fallbackStats = {
+    completedProjects: 24,
+    linesOfCode: 370000,
+    totalRepos: 24,
+    yearsExperience: 5
+};
+const fallbackRepositories = [
+    {
+        name: 'STM32-based-High-Power-Boost-Converter',
+        description: 'STM32-based high power boost converter project',
+        html_url: 'https://github.com/aroesz98/STM32-based-High-Power-Boost-Converter',
+        language: 'C',
+        stargazers_count: 0,
+        forks_count: 0
+    },
+    {
+        name: 'SimpleFSM',
+        description: 'Simple finite state machine implementation',
+        html_url: 'https://github.com/aroesz98/SimpleFSM',
+        language: 'C++',
+        stargazers_count: 0,
+        forks_count: 0
+    },
+    {
+        name: 'portfolio',
+        description: 'Personal portfolio website',
+        html_url: 'https://github.com/aroesz98/portfolio',
+        language: 'JavaScript',
+        stargazers_count: 0,
+        forks_count: 0
+    },
+    {
+        name: 'PSXE_ReARMed',
+        description: 'PSX Emulator for ARM Cortex-M',
+        html_url: 'https://github.com/aroesz98/PSXE_ReARMed',
+        language: 'C',
+        stargazers_count: 0,
+        forks_count: 0
+    },
+    {
+        name: 'CRTOS',
+        description: 'Custom Real-Time Operating System for ARM Cortex-M',
+        html_url: 'https://github.com/aroesz98/CRTOS',
+        language: 'C++',
+        stargazers_count: 1,
+        forks_count: 0
+    },
+    {
+        name: 'Memory-Operations-ARM-CM4-CM7',
+        description: 'ARM Cortex M4/M7 optimized memory operations',
+        html_url: 'https://github.com/aroesz98/Memory-Operations-ARM-CM4-CM7',
+        language: 'Assembly',
+        stargazers_count: 1,
+        forks_count: 0
+    }
+];
+
+function readCachedGitHubData() {
+    try {
+        const cachedData = JSON.parse(localStorage.getItem(githubCacheKey));
+        if (cachedData && Date.now() - cachedData.updatedAt < githubCacheMaxAge) {
+            return cachedData;
+        }
+    } catch (error) {
+        console.warn('Unable to read cached GitHub data:', error);
+    }
+
+    return null;
+}
+
+function writeCachedGitHubData(stats, repositories) {
+    try {
+        localStorage.setItem(githubCacheKey, JSON.stringify({
+            stats,
+            repositories,
+            updatedAt: Date.now()
+        }));
+    } catch (error) {
+        console.warn('Unable to cache GitHub data:', error);
+    }
+}
+
 async function fetchGitHubData() {
-    const username = 'aroesz98';
+    const cachedData = readCachedGitHubData();
+
+    if (cachedData) {
+        updateStats(cachedData.stats);
+        displayRepositories(cachedData.repositories);
+    } else {
+        updateStats(fallbackStats);
+        displayRepositories(fallbackRepositories);
+    }
     
     try {
-        // Fetch user data and repos in parallel
         const [userResponse, reposResponse] = await Promise.all([
-            fetch(`https://api.github.com/users/${username}`),
-            fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
+            fetch(`https://api.github.com/users/${githubUsername}`, {
+                headers: { Accept: 'application/vnd.github+json' }
+            }),
+            fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=100`, {
+                headers: { Accept: 'application/vnd.github+json' }
+            })
         ]);
+
+        if (!userResponse.ok || !reposResponse.ok) {
+            throw new Error(`GitHub API request failed: user ${userResponse.status}, repos ${reposResponse.status}`);
+        }
         
         const userData = await userResponse.json();
         const repos = await reposResponse.json();
-        
-        console.log(`Fetched user data and ${repos.length} repositories`);
-        
-        // Calculate total lines of code
-        let totalLines = 0;
-        const languagePromises = repos.slice(0, 30).map(repo => 
-            fetch(`https://api.github.com/repos/${username}/${repo.name}/languages`)
-                .then(res => res.json())
-                .catch(() => ({}))
-        );
-        
-        const languagesData = await Promise.all(languagePromises);
-        languagesData.forEach(languages => {
-            Object.values(languages).forEach(lines => {
-                totalLines += lines;
-            });
-        });
-        
-        // Convert bytes to approximate lines
-        const approximateLines = Math.floor(totalLines / 50);
-        
-        let roundedLines;
-        if (approximateLines >= 10000) {
-            roundedLines = Math.floor(approximateLines / 1000) * 1000;
-        } else if (approximateLines >= 1000) {
-            roundedLines = Math.floor(approximateLines / 100) * 100;
-        } else {
-            roundedLines = approximateLines || 1000;
+
+        if (!Array.isArray(repos)) {
+            throw new Error('GitHub repositories response was not an array');
         }
         
+        console.log(`Fetched user data and ${repos.length} repositories`);
+
         const completedProjects = repos.filter(repo => !repo.fork).length;
         const createdDate = new Date(userData.created_at);
         const yearsExperience = Math.max(1, new Date().getFullYear() - createdDate.getFullYear());
+        const stats = {
+            completedProjects,
+            linesOfCode: fallbackStats.linesOfCode,
+            totalRepos: userData.public_repos,
+            yearsExperience
+        };
+        const latestRepositories = repos.slice(0, 6);
         
         console.log('GitHub Stats:', {
             completedProjects,
-            linesOfCode: roundedLines,
+            linesOfCode: stats.linesOfCode,
             totalRepos: userData.public_repos,
             yearsExperience
         });
         
-        // Update stats
-        const statNumbers = document.querySelectorAll('.stat-number');
-        if (statNumbers.length >= 4) {
-            statNumbers[0].setAttribute('data-target', completedProjects);
-            statNumbers[1].setAttribute('data-target', roundedLines);
-            statNumbers[2].setAttribute('data-target', userData.public_repos);
-            statNumbers[3].setAttribute('data-target', yearsExperience);
-        }
-        
-        // Display repositories
-        displayRepositories(repos.slice(0, 6));
+        updateStats(stats);
+        displayRepositories(latestRepositories);
+        writeCachedGitHubData(stats, latestRepositories);
         
     } catch (error) {
         console.error('Error fetching GitHub data:', error);
-        // Set default stats on error
-        const statNumbers = document.querySelectorAll('.stat-number');
-        if (statNumbers.length >= 4) {
-            statNumbers[0].setAttribute('data-target', 20);
-            statNumbers[1].setAttribute('data-target', 100000);
-            statNumbers[2].setAttribute('data-target', 20);
-            statNumbers[3].setAttribute('data-target', 5);
-        }
-        
-        // Show error message for repos
-        const loadingSpinner = document.querySelector('.loading-spinner');
-        if (loadingSpinner) {
-            loadingSpinner.innerHTML = '<p>Unable to load repositories. Please visit <a href="https://github.com/aroesz98" target="_blank" style="color: var(--primary-color);">GitHub</a> directly.</p>';
-        }
+    }
+}
+
+let githubDataPromise;
+
+function loadGitHubData() {
+    if (!githubDataPromise) {
+        githubDataPromise = fetchGitHubData();
+    }
+
+    return githubDataPromise;
+}
+
+function updateStats(stats) {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    const statValues = [
+        stats.completedProjects,
+        stats.linesOfCode,
+        stats.totalRepos,
+        stats.yearsExperience
+    ];
+
+    if (statNumbers.length >= 4) {
+        statValues.forEach((value, index) => {
+            statNumbers[index].setAttribute('data-target', value);
+            statNumbers[index].textContent = value.toLocaleString();
+        });
     }
 }
 
@@ -183,6 +272,8 @@ function displayRepositories(repos) {
         return;
     }
     
+    reposGrid.innerHTML = '';
+
     repos.forEach((repo, index) => {
         const repoCard = document.createElement('a');
         repoCard.href = repo.html_url;
@@ -241,7 +332,7 @@ const statsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             // First fetch real GitHub data, then animate
-            fetchGitHubStats().then(() => {
+            loadGitHubData().then(() => {
                 document.querySelectorAll('.stat-number').forEach(stat => {
                     animateCounter(stat);
                 });
@@ -256,78 +347,7 @@ if (statsSection) {
     statsObserver.observe(statsSection);
 }
 
-// ===========================
-// Fetch GitHub Repositories
-// ===========================
-async function fetchGitHubRepos() {
-    const username = 'aroesz98';
-    const reposGrid = document.getElementById('repos-grid');
-    const loadingSpinner = document.querySelector('.loading-spinner');
-    
-    if (!reposGrid) {
-        console.error('repos-grid element not found');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`);
-        
-        if (!response.ok) {
-            throw new Error(`GitHub API returned ${response.status}`);
-        }
-        
-        const repos = await response.json();
-        
-        console.log(`Fetched ${repos.length} repositories`);
-        
-        if (loadingSpinner) {
-            loadingSpinner.style.display = 'none';
-        }
-        
-        if (!Array.isArray(repos) || repos.length === 0) {
-            reposGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No repositories found.</p>';
-            return;
-        }
-        
-        repos.forEach((repo, index) => {
-            const repoCard = document.createElement('a');
-            repoCard.href = repo.html_url;
-            repoCard.target = '_blank';
-            repoCard.className = 'repo-card';
-            repoCard.style.animationDelay = `${index * 0.1}s`;
-            
-            const languageColor = getLanguageColor(repo.language);
-            
-            repoCard.innerHTML = `
-                <div class="repo-header">
-                    <span class="repo-icon">📦</span>
-                    <h3 class="repo-name">${repo.name}</h3>
-                </div>
-                <p class="repo-description">${repo.description || 'No description available'}</p>
-                <div class="repo-stats">
-                    ${repo.language ? `
-                        <span class="repo-stat">
-                            <span class="language-dot" style="background-color: ${languageColor}"></span>
-                            ${repo.language}
-                        </span>
-                    ` : ''}
-                    <span class="repo-stat">⭐ ${repo.stargazers_count}</span>
-                    <span class="repo-stat">🔱 ${repo.forks_count}</span>
-                </div>
-            `;
-            
-            reposGrid.appendChild(repoCard);
-        });
-    } catch (error) {
-        console.error('Error fetching repos:', error);
-        if (loadingSpinner) {
-            loadingSpinner.innerHTML = '<p>Unable to load repositories. Please visit <a href="https://github.com/aroesz98" target="_blank">GitHub</a> directly.</p>';
-        }
-        if (reposGrid) {
-            reposGrid.innerHTML = '';
-        }
-    }
-}
+loadGitHubData();
 
 function getLanguageColor(language) {
     const colors = {
@@ -410,18 +430,25 @@ window.addEventListener('scroll', () => {
 // Form Submission
 // ===========================
 const contactForm = document.querySelector('.contact-form');
+const contactEmail = 'arkadiusz.szlanta@vp.pl';
 
 contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
 
-    // Basic validation
     if (name && email && message) {
-        // Here you would typically send the data to a server
-        alert('Thank you for your message! We will get back to you soon.');
+        const subject = `Portfolio contact from ${name}`;
+        const body = [
+            `Name: ${name}`,
+            `Email: ${email}`,
+            '',
+            message
+        ].join('\n');
+
+        window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         contactForm.reset();
     } else {
         alert('Please fill in all fields.');
@@ -473,4 +500,4 @@ window.addEventListener('scroll', () => {
     }
 });
 
-console.log('Modern Website Template loaded successfully!');
+console.log('Portfolio script loaded successfully!');

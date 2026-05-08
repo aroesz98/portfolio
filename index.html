@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Modern website template with responsive design">
-    <title>Modern Website Template</title>
+    <meta name="description" content="Arkadiusz Szlanta's portfolio.">
+    <title>Arkadiusz Szlanta's Portfolio</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,7 @@
     <section id="home" class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1 class="hero-title">Embedded Systems Developer</h1>
+                <h1 class="hero-title">C/C++ Embedded Software Engineer</h1>
                 <p class="hero-subtitle"><span id="typed-text"></span><span class="cursor">|</span></p>
                 <div class="hero-buttons">
                     <a href="#projects" class="btn btn-primary">View Projects</a>
@@ -134,9 +134,7 @@
                     </ul>
                 </div>
                 <div class="about-image">
-                    <div class="image-placeholder">
-                        <span>Your Image Here</span>
-                    </div>
+                    <img src="me.jpg" alt="Arkadiusz Szlanta" class="profile-photo">
                 </div>
             </div>
         </div>
@@ -146,15 +144,15 @@
     <section id="contact" class="contact">
         <div class="container">
             <h2 class="section-title">Get In Touch</h2>
-            <form class="contact-form">
+            <form class="contact-form" action="mailto:arkadiusz.szlanta@vp.pl" method="post" enctype="text/plain">
                 <div class="form-group">
-                    <input type="text" id="name" placeholder="Your Name" required>
+                    <input type="text" id="name" name="name" placeholder="Your Name" required>
                 </div>
                 <div class="form-group">
-                    <input type="email" id="email" placeholder="Your Email" required>
+                    <input type="email" id="email" name="email" placeholder="Your Email" required>
                 </div>
                 <div class="form-group">
-                    <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+                    <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Send Message</button>
             </form>
@@ -169,7 +167,7 @@
                 <a href="https://github.com/aroesz98" target="_blank" aria-label="GitHub">GH</a>
                 <a href="#" aria-label="LinkedIn">LI</a>
                 <a href="#" aria-label="Twitter">TW</a>
-                <a href="#contact" aria-label="Contact">✉️</a>
+                <a href="mailto:arkadiusz.szlanta@vp.pl" aria-label="Contact">✉️</a>
             </div>
         </div>
     </footer>
